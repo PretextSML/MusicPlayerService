@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.musicplayerservice'
+    namespace 'com.pretext.musicplayerservice'
     compileSdk 35
 
     defaultConfig {
-        applicationId "com.example.musicplayerservice"
+        applicationId "com.pretext.musicplayerservice"
         minSdk 34
         targetSdk 35
         versionCode 1
@@ -27,7 +27,7 @@ android {
         targetCompatibility JavaVersion.VERSION_11
     }
 
-    buildFeatures{
+    buildFeatures {
         aidl true
     }
 }

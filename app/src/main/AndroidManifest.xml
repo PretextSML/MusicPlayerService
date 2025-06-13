@@ -18,7 +18,7 @@
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="com.example.musicplayerservice.MusicPlayerService" />
+                <action android:name="com.pretext.musicplayerservice.MusicPlayerService" />
             </intent-filter>
         </service>
 

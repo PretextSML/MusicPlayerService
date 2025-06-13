@@ -1,4 +1,4 @@
-package com.example.musicplayerservice;
+package com.pretext.musicplayerservice;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,7 +8,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String TAG = "[service]";
+    private static final String TAG = "[service]";
+
+
+    void loadDatabase() {
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
