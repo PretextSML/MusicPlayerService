@@ -20,22 +20,30 @@ public class MusicPlayerService extends Service {
     private Timer timer;
 
     private final IBinder iBinder = new IMusicPlayerInterface.Stub() {
-
         @Override
         public void stopTimer() {
+            Log.d(TAG, "cancel timer");
             timer.cancel();
         }
 
+
         @Override
         public void playMusic(String musicPath) {
+            Log.d(TAG, "play Music");
             try {
+                mediaPlayer.setOnCompletionListener(null);
                 mediaPlayer.reset();
                 mediaPlayer.setDataSource(musicPath);
                 mediaPlayer.prepare();
                 mediaPlayer.start();
                 mediaPlayer.setOnCompletionListener(mp -> {
+                    Log.d(TAG, "playMusic: complete");
                     try {
-                        musicProgressCallback.onProgressChanged(mediaPlayer.getCurrentPosition());
+                        if (!mediaPlayer.isPlaying()) {
+                            musicProgressCallback.onFinishPlaying();
+                            mediaPlayer.setOnCompletionListener(null);
+                            mediaPlayer.reset();
+                        }
                     } catch (RemoteException e) {
                         throw new RuntimeException(e);
                     }
@@ -46,17 +54,23 @@ public class MusicPlayerService extends Service {
         }
 
         @Override
+        public void setDuration(int duration) {
+            mediaPlayer.seekTo(duration);
+            mediaPlayer.start();
+        }
+
+        @Override
         public void pauseMusic() {
-            if (mediaPlayer != null) {
-                if (mediaPlayer.isPlaying()) {
-                    mediaPlayer.pause();
-                    isPause = true;
-                }
+            Log.d(TAG, "pause Music: isplaying = " + mediaPlayer.isPlaying());
+            if (mediaPlayer.isPlaying()) {
+                mediaPlayer.pause();
+                isPause = true;
             }
         }
 
         @Override
         public void resumeMusic() {
+            Log.d(TAG, "resumeMusic: ispause = " + isPause);
             if (isPause) {
                 isPause = false;
                 mediaPlayer.start();
@@ -65,9 +79,8 @@ public class MusicPlayerService extends Service {
 
         @Override
         public void stopMusic() {
-            if (mediaPlayer != null) {
-                mediaPlayer.reset();
-            }
+            Log.d(TAG, "stopMusic");
+            mediaPlayer.reset();
         }
 
         @Override
@@ -78,21 +91,20 @@ public class MusicPlayerService extends Service {
 
         @Override
         public void unregisterCallback(IMusicProgressCallback callback) {
+            Log.d(TAG, "unregisterCallback: " + callback);
             musicProgressCallback = null;
         }
 
         @Override
-        public void sendData() {
+        public void startTimer() {
+            Log.d(TAG, "startTimer");
             timer = new Timer();
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
                     try {
-                        if (mediaPlayer != null) {
-                            musicProgressCallback.onProgressChanged(mediaPlayer.getCurrentPosition());
-                        } else {
-                            musicProgressCallback.onProgressChanged(0);
-                        }
+                        musicProgressCallback.onProgressChanged(mediaPlayer.getCurrentPosition());
+                        musicProgressCallback.onPlayStatusChanged(mediaPlayer.isPlaying());
                     } catch (RemoteException e) {
                         throw new RuntimeException(e);
                     }
