@@ -40,9 +40,9 @@ public class MusicPlayerService extends Service {
                     Log.d(TAG, "playMusic: complete");
                     try {
                         if (!mediaPlayer.isPlaying()) {
-                            musicProgressCallback.onFinishPlaying();
                             mediaPlayer.setOnCompletionListener(null);
                             mediaPlayer.reset();
+                            musicProgressCallback.onFinishPlaying();
                         }
                     } catch (RemoteException e) {
                         throw new RuntimeException(e);
