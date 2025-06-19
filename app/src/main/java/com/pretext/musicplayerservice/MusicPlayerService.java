@@ -96,6 +96,39 @@ public class MusicPlayerService extends Service {
         }
 
         @Override
+        public void setHistory(String user, String history) {
+            MusicPlayerUserManager.getInstance().updateHistory(user, history);
+        }
+
+        @Override
+        public void setDBHelper() {
+            MusicPlayerUserManager.getInstance().setDbOpenHelper(getApplicationContext());
+        }
+
+        @Override
+        public boolean addNewUser(String user, String password) {
+            if (MusicPlayerUserManager.getInstance().isExists(user)) {
+                return true;
+            }
+            MusicPlayerUserManager.getInstance().addUser(user, password, "");
+            return false;
+        }
+
+        @Override
+        public boolean authenticatedUser(String user, String password) {
+            Log.d(TAG, "authenticatedUser: " + user + ", " + password);
+            if (!MusicPlayerUserManager.getInstance().isExists(user))
+                return false;
+
+            return MusicPlayerUserManager.getInstance().authenticatedUser(user, password);
+        }
+
+        @Override
+        public String getHistory(String user) {
+            return MusicPlayerUserManager.getInstance().getUserHistory(user);
+        }
+
+        @Override
         public void startTimer() {
             Log.d(TAG, "startTimer");
             timer = new Timer();
